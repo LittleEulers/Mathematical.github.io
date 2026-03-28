@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sigma Alpha — Computational Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e0ddd4;
+    --border-strong: #c8c4b8;
+    --text: #1a1916;
+    --text-muted: #6b6860;
+    --text-faint: #9e9b93;
+    --accent: #d4500a;
+    --accent-light: #f97316;
+    --accent-bg: #fff4ee;
+    --accent-border: #fbd5bb;
+    --green: #166534;
+    --green-bg: #f0fdf4;
+    --blue: #1d4ed8;
+    --blue-bg: #eff6ff;
+    --pod-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --pod-shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .logo span { color: var(--text); }
+
+  .logo-sigma {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+
+  .topbar-search {
+    flex: 1;
+    max-width: 700px;
+    display: flex;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+
+  .topbar-search:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212,80,10,0.1);
+  }
+
+  .topbar-search input {
+    flex: 1;
+    padding: 8px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
+    border: none;
+    outline: none;
+    background: var(--surface);
+    color: var(--text);
+    min-width: 0;
+  }
+
+  .topbar-search button {
+    background: var(--accent);
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbar-search button:hover { background: #b54008; }
+
+  .topbar-nav {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .topbar-nav a {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 5px;
+    transition: background 0.15s;
+  }
+
+  .topbar-nav a:hover { background: var(--surface2); color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 24px 60px;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .hero-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .hero-sigma {
+    width: 56px;
+    height: 56px;
+    background: var(--accent);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 500;
+    border-radius: 12px;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-title em {
+    color: var(--accent);
+    font-style: normal;
+  }
+
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+
+  /* ── MAIN SEARCH ── */
+  .search-wrap {
+    display: flex;
+    border: 2px solid var(--border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 20px;
+    box-shadow: var(--pod-shadow);
+  }
+
+  .search-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(212,80,10,0.12);
+  }
+
+  #main-input {
+    flex: 1;
+    padding: 16px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 400;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+  }
+
+  #main-input::placeholder { color: var(--text-faint); }
+
+  .search-btn {
+    background: var(--accent);
+    border: none;
+    padding: 16px 24px;
+    cursor: pointer;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-btn:hover { background: #b54008; }
+  .search-btn:active { background: #963506; }
+
+  /* ── EXAMPLE CHIPS ── */
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .ex-label {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    align-self: center;
+    margin-right: 4px;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    padding: 4px 12px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* ── RESULTS ── */
+  .results-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .results-query {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .results-query strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .results-time {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── PODS ── */
+  .pod-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pod {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--pod-shadow);
+    animation: podIn 0.25s ease both;
+    transition: box-shadow 0.2s;
+  }
+
+  .pod:hover { box-shadow: var(--pod-shadow-hover); }
+
+  @keyframes podIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .pod:nth-child(1) { animation-delay: 0.05s; }
+  .pod:nth-child(2) { animation-delay: 0.10s; }
+  .pod:nth-child(3) { animation-delay: 0.15s; }
+  .pod:nth-child(4) { animation-delay: 0.20s; }
+  .pod:nth-child(5) { animation-delay: 0.25s; }
+  .pod:nth-child(6) { animation-delay: 0.30s; }
+
+  .pod.primary { border-color: var(--accent-border); }
+
+  .pod-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pod.primary .pod-header {
+    background: var(--accent-bg);
+    border-bottom-color: var(--accent-border);
+  }
+
+  .pod-icon {
+    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .pod.primary .pod-icon {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  .pod-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  .pod.primary .pod-title { color: var(--accent); }
+
+  .pod-body {
+    padding: 16px 20px;
+  }
+
+  /* Result value (big answer) */
+  .result-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .result-subvalue {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Table in pod */
+  .pod-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .pod-table tr:not(:last-child) td,
+  .pod-table tr:not(:last-child) th {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pod-table td, .pod-table th {
+    padding: 9px 12px;
+    text-align: left;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .pod-table td:first-child {
+    color: var(--text-muted);
+    font-weight: 500;
+    width: 200px;
+    font-size: 12.5px;
+    padding-right: 20px;
+    white-space: nowrap;
+  }
+
+  .pod-table td:last-child {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  /* Plain text content */
+  .pod-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .pod-text p { margin-bottom: 10px; }
+  .pod-text p:last-child { margin-bottom: 0; }
+
+  .pod-text code {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* List */
+  .pod-list {
+    list-style: none;
+    font-size: 13.5px;
+  }
+
+  .pod-list li {
+    display: flex;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  .pod-list li:last-child { border-bottom: none; }
+
+  .pod-list-label {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    width: 180px;
+    flex-shrink: 0;
+  }
+
+  .pod-list-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+  }
+
+  /* Equation / math display */
+  .math-block {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.8;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .math-block + .math-block { margin-top: 10px; }
+
+  /* Section headings inside pods */
+  .pod-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+    margin-top: 18px;
+  }
+
+  .pod-section-title:first-child { margin-top: 0; }
+
+  /* Tag pills */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+
+  .tag-green { background: var(--green-bg); color: var(--green); }
+  .tag-blue { background: var(--blue-bg); color: var(--blue); }
+  .tag-orange { background: var(--accent-bg); color: var(--accent); }
+
+  /* ── LOADING ── */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 20px;
+  }
+
+  .loading-bar-wrap {
+    width: 300px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .loading-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: loadPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes loadPulse {
+    0% { width: 0%; margin-left: 0; }
+    50% { width: 60%; margin-left: 20%; }
+    100% { width: 0%; margin-left: 100%; }
+  }
+
+  .loading-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  .loading-pods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .skeleton-pod {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--pod-shadow);
+  }
+
+  .skeleton-header {
+    height: 42px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .skeleton-icon { width: 24px; height: 24px; background: var(--border); border-radius: 5px; }
+  .skeleton-title { width: 120px; height: 12px; background: var(--border); border-radius: 4px; }
+
+  .skeleton-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+  .skeleton-line {
+    height: 13px;
+    background: var(--border);
+    border-radius: 4px;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-line.tall { height: 32px; }
+  .skeleton-line.w-30 { width: 30%; }
+  .skeleton-line.w-50 { width: 50%; }
+  .skeleton-line.w-70 { width: 70%; }
+  .skeleton-line.w-90 { width: 90%; }
+  .skeleton-line.w-100 { width: 100%; }
+
+  @keyframes shimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* ── CATEGORIES ── */
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 40px;
+  }
+
+  .cat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: block;
+  }
+
+  .cat-card:hover {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    box-shadow: var(--pod-shadow);
+    transform: translateY(-1px);
+  }
+
+  .cat-icon { font-size: 22px; margin-bottom: 8px; }
+
+  .cat-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .cat-desc {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    line-height: 1.4;
+  }
+
+  /* ── ERROR ── */
+  .error-pod {
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .error-icon { font-size: 20px; flex-shrink: 0; }
+
+  .error-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #991b1b;
+    margin-bottom: 4px;
+  }
+
+  .error-msg { font-size: 13px; color: #7f1d1d; line-height: 1.5; }
+
+  /* ── UTILITY ── */
+  .hidden { display: none !important; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 40px 16px 32px; }
+    .hero-title { font-size: 26px; }
+    .result-value { font-size: 20px; }
+    .topbar-nav { display: none; }
+    .categories { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR (hidden on home, shown on results) -->
+<div class="topbar hidden" id="topbar">
+  <a class="logo" href="#" onclick="goHome()">
+    <div class="logo-sigma">Σ</div>
+    <span>Sigma<em>Alpha</em></span>
+  </a>
+  <div class="topbar-search">
+    <input type="text" id="topbar-input" placeholder="Enter a computation…" autocomplete="off" />
+    <button onclick="runTopbarSearch()">▶</button>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#">Mathematics</a>
+    <a href="#">Science</a>
+    <a href="#">Society</a>
+    <a href="#">Everyday</a>
+  </nav>
+</div>
+
+<!-- HOME PAGE -->
+<div id="home-page">
+  <div class="hero">
+    <div class="hero-logo">
+      <div class="hero-sigma">Σ</div>
+      <h1 class="hero-title">Sigma<em>Alpha</em></h1>
+    </div>
+    <p class="hero-sub">Computational intelligence engine. Enter any question, calculation,<br>or query to get structured, factual answers.</p>
+
+    <div class="search-wrap">
+      <input type="text" id="main-input" placeholder="e.g.  integrate x² sin(x) dx  ·  mass of the sun  ·  GDP of Germany 2023" autocomplete="off" />
+      <button class="search-btn" onclick="runMainSearch()">
+        <span>Compute</span>
+        <span>▶</span>
+      </button>
+    </div>
+
+    <div class="examples">
+      <span class="ex-label">Try:</span>
+      <span class="chip" onclick="fillAndSearch(this)">derivative of x³ ln(x)</span>
+      <span class="chip" onclick="fillAndSearch(this)">speed of light in km/h</span>
+      <span class="chip" onclick="fillAndSearch(this)">prime factorization of 360</span>
+      <span class="chip" onclick="fillAndSearch(this)">solve x² - 5x + 6 = 0</span>
+      <span class="chip" onclick="fillAndSearch(this)">population of Japan</span>
+      <span class="chip" onclick="fillAndSearch(this)">1 light year in miles</span>
+    </div>
+
+    <div class="categories">
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="integral of e^x cos(x) dx">
+        <div class="cat-icon">∫</div>
+        <div class="cat-name">Mathematics</div>
+        <div class="cat-desc">Calculus, algebra, number theory</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="boiling point of water at 5000m altitude">
+        <div class="cat-icon">⚗️</div>
+        <div class="cat-name">Chemistry</div>
+        <div class="cat-desc">Elements, compounds, reactions</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="orbital period of Mars">
+        <div class="cat-icon">🔭</div>
+        <div class="cat-name">Astronomy</div>
+        <div class="cat-desc">Stars, planets, cosmology</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="GDP per capita of Switzerland">
+        <div class="cat-icon">📊</div>
+        <div class="cat-name">Data & Statistics</div>
+        <div class="cat-desc">Demographics, economics, data</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="convert 75 mph to km/h">
+        <div class="cat-icon">🔄</div>
+        <div class="cat-name">Unit Conversion</div>
+        <div class="cat-desc">Convert any unit to any unit</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="500 USD to EUR">
+        <div class="cat-icon">💱</div>
+        <div class="cat-name">Finance</div>
+        <div class="cat-desc">Currency, markets, finance</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="nutritional info of 100g dark chocolate">
+        <div class="cat-icon">🍎</div>
+        <div class="cat-name">Nutrition</div>
+        <div class="cat-desc">Food, diet, health data</div>
+      </a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="eigenvalues of [[2,1],[1,3]]">
+        <div class="cat-icon">🧮</div>
+        <div class="cat-name">Linear Algebra</div>
+        <div class="cat-desc">Matrices, vectors, transforms</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="results-page" class="hidden">
+  <div class="results-wrap">
+    <div class="results-header">
+      <span class="results-query">Results for <strong id="results-query-text"></strong></span>
+      <span class="results-time" id="results-time"></span>
+    </div>
+    <div id="pod-container"></div>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are SigmaAlpha, a Wolfram Alpha-style computational intelligence engine. When given a query, analyze it and respond with a structured JSON object representing result "pods" — just like Wolfram Alpha.
+
+IMPORTANT: Respond ONLY with valid JSON. No markdown, no backticks, no preamble.
+
+JSON schema:
+{
+  "pods": [
+    {
+      "id": "string",
+      "title": "string",
+      "icon": "string (single emoji)",
+      "primary": boolean,
+      "type": "value" | "table" | "list" | "math" | "text",
+      "content": ...
+    }
+  ]
+}
+
+Pod types and their content shape:
+- "value": { "main": "string (the main answer)", "sub": "string (additional info, units, clarification)" }
+- "table": { "rows": [["label", "value"], ...] }  — array of [label, value] pairs
+- "list": { "items": [{"label": "string", "value": "string"}, ...] }
+- "math": { "expressions": ["expr1", "expr2", ...] }  — mathematical steps or expressions
+- "text": { "paragraphs": ["para1", "para2", ...] }  — explanatory text
+
+Rules:
+1. Always produce 3–7 pods. First pod should be "primary": true with the main answer.
+2. Tailor pods to the query type. Examples:
+   - Math calculation: pods for Result, Step-by-step, Alternate forms, Number line, Properties
+   - Unit conversion: pods for Result, Comparisons, Other conversions, Formula
+   - Country/geography: pods for Overview, Key Statistics, Economy, Demographics, Geography
+   - Scientific fact: pods for Answer, Physical Properties, Formulas, Context
+   - Nutrition query: pods for Serving Info, Macronutrients, Vitamins & Minerals, Comparison
+3. Be extremely precise with numbers and units. Use proper scientific notation where appropriate.
+4. Use real, accurate data. Do not fabricate statistics.
+5. For math, show proper mathematical notation using Unicode: ², ³, √, ∫, ∂, π, ∞, ≈, ±, ×, ÷, →
+6. Keep values concise and formatted nicely — avoid walls of text.
+7. Icon should be a single relevant emoji that represents the pod's category.
+
+Examples of good pods:
+For "speed of light":
+- Primary pod (value): main="299,792,458 m/s", sub="approximately 3 × 10⁸ m/s"
+- Table pod: rows=[["In km/h","1,079,252,848.8 km/h"],["In miles/s","186,282 mi/s"],["In AU/day","173.145 AU/day"]]
+- Text pod: Brief physics context
+
+For "integrate x²":
+- Primary pod (math): expressions=["∫ x² dx", "= x³/3 + C"]
+- Math pod for steps
+- Table pod for properties`;
+
+async function callClaude(query) {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: query }]
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message);
+  const text = data.content.map(b => b.text || "").join("");
+  const clean = text.replace(/```json|```/g, "").trim();
+  return JSON.parse(clean);
+}
+
+function renderPod(pod) {
+  const div = document.createElement("div");
+  div.className = `pod${pod.primary ? " primary" : ""}`;
+
+  div.innerHTML = `
+    <div class="pod-header">
+      <div class="pod-icon">${pod.icon || "•"}</div>
+      <div class="pod-title">${escHtml(pod.title)}</div>
+    </div>
+    <div class="pod-body">
+      ${renderPodContent(pod)}
+    </div>
+  `;
+  return div;
+}
+
+function renderPodContent(pod) {
+  switch (pod.type) {
+    case "value": {
+      const c = pod.content;
+      return `
+        <div class="result-value">${escHtml(c.main || "")}</div>
+        ${c.sub ? `<div class="result-subvalue">${escHtml(c.sub)}</div>` : ""}
+      `;
+    }
+    case "table": {
+      const rows = pod.content.rows || [];
+      return `<table class="pod-table">
+        ${rows.map(r => `<tr><td>${escHtml(r[0] || "")}</td><td>${escHtml(r[1] || "")}</td></tr>`).join("")}
+      </table>`;
+    }
+    case "list": {
+      const items = pod.content.items || [];
+      return `<ul class="pod-list">
+        ${items.map(it => `<li>
+          <span class="pod-list-label">${escHtml(it.label || "")}</span>
+          <span class="pod-list-value">${escHtml(it.value || "")}</span>
+        </li>`).join("")}
+      </ul>`;
+    }
+    case "math": {
+      const exprs = pod.content.expressions || [];
+      return exprs.map(e => `<div class="math-block">${escHtml(e)}</div>`).join("");
+    }
+    case "text": {
+      const paras = pod.content.paragraphs || [];
+      return `<div class="pod-text">${paras.map(p => `<p>${escHtml(p)}</p>`).join("")}</div>`;
+    }
+    default:
+      return `<div class="pod-text">${escHtml(JSON.stringify(pod.content))}</div>`;
+  }
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function showSkeletons() {
+  const container = document.getElementById("pod-container");
+  container.innerHTML = "";
+  const skeletons = [
+    { lines: [{ cls: "tall w-50" }, { cls: "w-30" }] },
+    { lines: [{ cls: "w-100" }, { cls: "w-90" }, { cls: "w-70" }] },
+    { lines: [{ cls: "w-100" }, { cls: "w-80" }, { cls: "w-90" }, { cls: "w-60" }] },
+  ];
+  skeletons.forEach(s => {
+    container.innerHTML += `
+      <div class="skeleton-pod">
+        <div class="skeleton-header">
+          <div class="skeleton-icon"></div>
+          <div class="skeleton-title"></div>
+        </div>
+        <div class="skeleton-body">
+          ${s.lines.map(l => `<div class="skeleton-line ${l.cls}"></div>`).join("")}
+        </div>
+      </div>
+    `;
+  });
+}
+
+async function search(query) {
+  query = query.trim();
+  if (!query) return;
+
+  const t0 = Date.now();
+
+  // Switch to results view
+  document.getElementById("home-page").classList.add("hidden");
+  document.getElementById("results-page").classList.remove("hidden");
+  document.getElementById("topbar").classList.remove("hidden");
+
+  // Sync inputs
+  document.getElementById("topbar-input").value = query;
+  document.getElementById("main-input").value = query;
+
+  // Update header
+  document.getElementById("results-query-text").textContent = query;
+  document.getElementById("results-time").textContent = "";
+
+  // Show skeletons
+  showSkeletons();
+
+  try {
+    const result = await callClaude(query);
+    const pods = result.pods || [];
+
+    const container = document.getElementById("pod-container");
+    container.innerHTML = "";
+
+    const grid = document.createElement("div");
+    grid.className = "pod-grid";
+
+    pods.forEach(pod => grid.appendChild(renderPod(pod)));
+    container.appendChild(grid);
+
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(2);
+    document.getElementById("results-time").textContent = `${elapsed}s · ${pods.length} pods`;
+  } catch (err) {
+    const container = document.getElementById("pod-container");
+    container.innerHTML = `
+      <div class="error-pod">
+        <div class="error-icon">⚠️</div>
+        <div>
+          <div class="error-title">Computation failed</div>
+          <div class="error-msg">${escHtml(err.message || "Unknown error occurred.")}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Scroll to top
+  window.scrollTo({ top: 0 });
+}
+
+function runMainSearch() {
+  search(document.getElementById("main-input").value);
+}
+
+function runTopbarSearch() {
+  search(document.getElementById("topbar-input").value);
+}
+
+function fillAndSearch(el) {
+  const q = el.dataset.q || el.textContent.trim();
+  document.getElementById("main-input").value = q;
+  search(q);
+}
+
+function goHome() {
+  document.getElementById("home-page").classList.remove("hidden");
+  document.getElementById("results-page").classList.add("hidden");
+  document.getElementById("topbar").classList.add("hidden");
+  window.scrollTo({ top: 0 });
+}
+
+// Keyboard handlers
+document.getElementById("main-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") runMainSearch();
+});
+
+document.getElementById("topbar-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") runTopbarSearch();
+});
+</script>
+</body>
+</html>
