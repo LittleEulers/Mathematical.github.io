@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sigma Alpha — Computational Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e0ddd4;
+    --border-strong: #c8c4b8;
+    --text: #1a1916;
+    --text-muted: #6b6860;
+    --text-faint: #9e9b93;
+    --accent: #d4500a;
+    --accent-bg: #fff4ee;
+    --accent-border: #fbd5bb;
+    --green: #166534;
+    --blue: #1d4ed8;
+    --blue-bg: #eff6ff;
+    --pod-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --pod-shadow-hover: 0 4px 12px rgba(0,0,0,0.12);
+    --kb-bg: #eeecea;
+    --kb-border: #d8d5cc;
+    --kb-key-bg: #ffffff;
+    --kb-key-border: #ccc9c0;
+    --kb-key-shadow: 0 2px 0 #b8b5ac;
+    --kb-fn-bg: #e2e0db;
+    --kb-fn-border: #c8c5bc;
+    --kb-fn-shadow: 0 2px 0 #a8a5a0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 24px; display: flex; align-items: center; gap: 16px;
+    height: 56px; position: sticky; top: 0; z-index: 200;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600;
+    color: var(--accent); letter-spacing: -0.02em; white-space: nowrap;
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
+  }
+  .logo span { color: var(--text); }
+  .logo-sigma {
+    width: 28px; height: 28px; background: var(--accent); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 15px; border-radius: 6px;
+  }
+  .topbar-search {
+    flex: 1; max-width: 680px; display: flex;
+    border: 1.5px solid var(--border-strong); border-radius: 8px; overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .topbar-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,80,10,0.1); }
+  .topbar-search input {
+    flex: 1; padding: 8px 12px;
+    font-family: 'DM Mono', monospace; font-size: 14px;
+    border: none; outline: none; background: var(--surface); color: var(--text); min-width: 0;
+  }
+  .tb-kb-btn {
+    background: var(--surface2); border: none; border-left: 1px solid var(--border);
+    padding: 0 11px; cursor: pointer; font-size: 16px; color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .tb-kb-btn:hover { background: var(--accent-bg); color: var(--accent); }
+  .tb-kb-btn.active { background: var(--accent); color: white; }
+  .topbar-search .go-btn {
+    background: var(--accent); border: none; padding: 8px 14px;
+    cursor: pointer; color: white; font-size: 15px;
+    transition: background 0.15s; display: flex; align-items: center;
+  }
+  .topbar-search .go-btn:hover { background: #b54008; }
+  .topbar-nav { display: flex; gap: 2px; margin-left: auto; }
+  .topbar-nav a {
+    font-size: 13px; color: var(--text-muted); text-decoration: none;
+    padding: 4px 10px; border-radius: 5px; transition: background 0.15s;
+  }
+  .topbar-nav a:hover { background: var(--surface2); color: var(--text); }
+
+  /* ── HERO ── */
+  .hero { padding: 60px 24px 36px; text-align: center; max-width: 880px; margin: 0 auto; }
+  .hero-logo { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 18px; }
+  .hero-sigma {
+    width: 54px; height: 54px; background: var(--accent); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 26px; border-radius: 12px;
+  }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; }
+  .hero-title em { color: var(--accent); font-style: normal; }
+  .hero-sub { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+
+  /* ── SEARCH AREA ── */
+  .search-container { position: relative; margin-bottom: 14px; }
+  .search-wrap {
+    display: flex; border: 2px solid var(--border-strong); border-radius: 10px;
+    overflow: visible; background: var(--surface);
+    transition: border-color 0.15s, box-shadow 0.15s, border-radius 0.15s;
+    box-shadow: var(--pod-shadow); position: relative; z-index: 2;
+  }
+  .search-wrap.kb-open {
+    border-color: var(--accent); border-radius: 10px 10px 0 0;
+    box-shadow: 0 0 0 4px rgba(212,80,10,0.12);
+  }
+  .search-wrap:focus-within:not(.kb-open) { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(212,80,10,0.12); }
+  #main-input {
+    flex: 1; padding: 14px 16px;
+    font-family: 'DM Mono', monospace; font-size: 16px;
+    border: none; outline: none; background: transparent; color: var(--text);
+  }
+  #main-input::placeholder { color: var(--text-faint); }
+  .kb-toggle-btn {
+    background: var(--surface2); border: none; border-left: 1px solid var(--border);
+    padding: 0 16px; cursor: pointer; font-size: 19px; color: var(--text-muted);
+    transition: all 0.15s; display: flex; align-items: center;
+  }
+  .kb-toggle-btn:hover { background: var(--accent-bg); color: var(--accent); }
+  .kb-toggle-btn.active { background: var(--accent); color: white; }
+  .search-btn {
+    background: var(--accent); border: none; padding: 14px 22px; cursor: pointer;
+    color: white; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase; transition: background 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .search-btn:hover { background: #b54008; }
+  .search-btn:active { background: #963506; }
+
+  /* ════════════════════════
+     MATH KEYBOARD
+  ════════════════════════ */
+  .math-keyboard {
+    background: var(--kb-bg);
+    border: 2px solid var(--accent); border-top: none;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+    overflow: hidden;
+    display: none;
+    position: relative; z-index: 1;
+  }
+  .math-keyboard.visible { display: block; }
+
+  .kb-tabs {
+    display: flex; background: var(--surface);
+    border-bottom: 1px solid var(--kb-border);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .kb-tabs::-webkit-scrollbar { display: none; }
+  .kb-tab {
+    flex-shrink: 0; padding: 8px 15px;
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.15s; white-space: nowrap; user-select: none;
+  }
+  .kb-tab:hover { color: var(--text); background: var(--surface2); }
+  .kb-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-bg); }
+
+  .kb-panel { display: none; padding: 10px 12px 12px; }
+  .kb-panel.active { display: block; }
+
+  .kb-row { display: flex; gap: 5px; margin-bottom: 5px; flex-wrap: wrap; align-items: center; }
+  .kb-row:last-child { margin-bottom: 0; }
+
+  .kb-divider { width: 1px; height: 32px; background: var(--kb-border); margin: 0 4px; flex-shrink: 0; }
+
+  .kb-key {
+    min-width: 40px; height: 40px; padding: 0 8px;
+    background: var(--kb-key-bg); border: 1px solid var(--kb-key-border);
+    border-radius: 6px; box-shadow: var(--kb-key-shadow);
+    cursor: pointer; font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 400;
+    color: var(--text); display: flex; align-items: center; justify-content: center;
+    transition: background 0.08s, transform 0.08s, box-shadow 0.08s;
+    user-select: none; white-space: nowrap; flex-shrink: 0;
+  }
+  .kb-key:hover { background: #fffaf7; border-color: var(--accent-border); }
+  .kb-key:active { background: #f5f2ed; box-shadow: 0 0 0 var(--kb-key-border); transform: translateY(2px); }
+
+  .kb-key.fn {
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    background: var(--kb-fn-bg); border-color: var(--kb-fn-border);
+    box-shadow: var(--kb-fn-shadow); color: #3a3835; min-width: 54px;
+    letter-spacing: 0.01em;
+  }
+  .kb-key.fn:hover { color: var(--accent); background: var(--accent-bg); border-color: var(--accent-border); }
+
+  .kb-key.wide { min-width: 68px; }
+  .kb-key.xl { min-width: 90px; }
+  .kb-key.xxl { min-width: 110px; }
+
+  .kb-key.accent {
+    background: var(--accent); border-color: #b54008;
+    box-shadow: 0 2px 0 #963506; color: white; font-size: 13px; font-weight: 600;
+  }
+  .kb-key.accent:hover { background: #c04008; }
+  .kb-key.accent:active { box-shadow: 0 0 0; transform: translateY(2px); }
+
+  .kb-key.del {
+    background: #fff5f5; border-color: #fca5a5;
+    box-shadow: 0 2px 0 #f87171; color: #b91c1c; font-size: 17px;
+  }
+  .kb-key.del:hover { background: #fee2e2; }
+
+  .kb-key.space-key {
+    flex: 1; min-width: 80px; font-family: 'DM Sans', sans-serif;
+    font-size: 11px; letter-spacing: 0.1em; color: var(--text-faint);
+  }
+
+  .kb-key.enter-key {
+    background: #15803d; border-color: #14532d;
+    box-shadow: 0 2px 0 #052e16; color: white;
+    font-size: 11.5px; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; letter-spacing: 0.06em; min-width: 88px;
+  }
+  .kb-key.enter-key:hover { background: #16a34a; }
+  .kb-key.enter-key:active { box-shadow: 0 0 0; transform: translateY(2px); }
+
+  .kb-util-row {
+    display: flex; gap: 5px; margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid var(--kb-border);
+  }
+
+  .kb-section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-faint); align-self: center; padding: 0 2px; white-space: nowrap;
+  }
+
+  /* ── EXAMPLES ── */
+  .examples { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 14px; }
+  .ex-label { font-size: 11.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; align-self: center; margin-right: 4px; }
+  .chip {
+    font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent);
+    background: var(--accent-bg); border: 1px solid var(--accent-border);
+    padding: 4px 12px; border-radius: 100px; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .chip:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* ── CATEGORIES ── */
+  .categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 10px; margin-top: 28px; }
+  .cat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; cursor: pointer;
+    transition: all 0.15s; text-decoration: none; display: block;
+  }
+  .cat-card:hover { border-color: var(--accent-border); background: var(--accent-bg); box-shadow: var(--pod-shadow); transform: translateY(-1px); }
+  .cat-icon { font-size: 20px; margin-bottom: 7px; }
+  .cat-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .cat-desc { font-size: 11.5px; color: var(--text-faint); line-height: 1.4; }
+
+  /* ── RESULTS ── */
+  .results-wrap { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+  .results-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .results-query { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-muted); }
+  .results-query strong { color: var(--text); font-weight: 500; }
+  .results-time { margin-left: auto; font-size: 12px; color: var(--text-faint); font-family: 'DM Mono', monospace; }
+
+  /* ── PODS ── */
+  .pod-grid { display: flex; flex-direction: column; gap: 12px; }
+  .pod {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; box-shadow: var(--pod-shadow);
+    animation: podIn 0.25s ease both; transition: box-shadow 0.2s;
+  }
+  .pod:hover { box-shadow: var(--pod-shadow-hover); }
+  @keyframes podIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .pod:nth-child(1){animation-delay:.04s} .pod:nth-child(2){animation-delay:.08s}
+  .pod:nth-child(3){animation-delay:.12s} .pod:nth-child(4){animation-delay:.16s}
+  .pod:nth-child(5){animation-delay:.20s} .pod:nth-child(6){animation-delay:.24s}
+  .pod.primary { border-color: var(--accent-border); }
+  .pod-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .pod.primary .pod-header { background: var(--accent-bg); border-bottom-color: var(--accent-border); }
+  .pod-icon {
+    font-size: 14px; width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface); border-radius: 5px; border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .pod.primary .pod-icon { background: var(--accent); border-color: var(--accent); color: white; }
+  .pod-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+  .pod.primary .pod-title { color: var(--accent); }
+  .pod-body { padding: 16px 20px; }
+  .result-value { font-family: 'DM Mono', monospace; font-size: 28px; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+  .result-subvalue { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+  .pod-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .pod-table tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+  .pod-table td { padding: 9px 12px; text-align: left; vertical-align: top; line-height: 1.5; }
+  .pod-table td:first-child { color: var(--text-muted); font-weight: 500; width: 200px; font-size: 12.5px; padding-right: 20px; }
+  .pod-table td:last-child { font-family: 'DM Mono', monospace; font-size: 13px; }
+  .pod-text { font-size: 14px; line-height: 1.7; }
+  .pod-text p { margin-bottom: 10px; }
+  .pod-text p:last-child { margin-bottom: 0; }
+  .pod-list { list-style: none; font-size: 13.5px; }
+  .pod-list li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+  .pod-list li:last-child { border-bottom: none; }
+  .pod-list-label { color: var(--text-muted); font-size: 12.5px; font-weight: 500; width: 180px; flex-shrink: 0; }
+  .pod-list-value { font-family: 'DM Mono', monospace; font-size: 13px; flex: 1; }
+  .math-block {
+    background: var(--surface2); border-radius: 8px; padding: 13px 18px;
+    font-family: 'DM Mono', monospace; font-size: 15px; line-height: 1.8;
+    border: 1px solid var(--border); overflow-x: auto; margin-bottom: 8px;
+  }
+  .math-block:last-child { margin-bottom: 0; }
+
+  /* ── SKELETONS ── */
+  .skeleton-pod { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--pod-shadow); margin-bottom: 12px; }
+  .skeleton-header { height: 42px; background: var(--surface2); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+  .skeleton-icon { width: 24px; height: 24px; background: var(--border); border-radius: 5px; }
+  .skeleton-title-bar { width: 110px; height: 12px; background: var(--border); border-radius: 4px; }
+  .skeleton-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .skeleton-line { height: 13px; background: var(--border); border-radius: 4px; animation: shimmer 1.5s ease-in-out infinite; }
+  .skeleton-line.tall { height: 30px; } .skeleton-line.w-30{width:30%} .skeleton-line.w-50{width:50%}
+  .skeleton-line.w-70{width:70%} .skeleton-line.w-80{width:80%} .skeleton-line.w-90{width:90%} .skeleton-line.w-100{width:100%}
+  @keyframes shimmer{0%,100%{opacity:.45}50%{opacity:1}}
+
+  /* ── ERROR ── */
+  .error-pod { background:#fff5f5; border:1px solid #fecaca; border-radius:10px; padding:20px 24px; display:flex; gap:14px; align-items:flex-start; }
+  .error-icon { font-size:20px; flex-shrink:0; }
+  .error-title { font-weight:600; font-size:14px; color:#991b1b; margin-bottom:4px; }
+  .error-msg { font-size:13px; color:#7f1d1d; line-height:1.5; }
+
+  .hidden { display: none !important; }
+
+  ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+  @media(max-width:640px){.hero{padding:36px 16px 24px}.hero-title{font-size:26px}.result-value{font-size:20px}.topbar-nav{display:none}.categories{grid-template-columns:repeat(2,1fr)}.kb-key{min-width:34px;height:36px;font-size:13px}}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar hidden" id="topbar">
+  <a class="logo" onclick="goHome()">
+    <div class="logo-sigma">Σ</div>
+    <span>Sigma<em>Alpha</em></span>
+  </a>
+  <div class="topbar-search">
+    <input type="text" id="topbar-input" placeholder="Enter a computation…" autocomplete="off" />
+    <button class="tb-kb-btn" id="tb-kb-btn" title="Math keyboard">⌨</button>
+    <button class="go-btn" onclick="runTopbarSearch()">▶</button>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#">Mathematics</a><a href="#">Science</a><a href="#">Society</a><a href="#">Everyday</a>
+  </nav>
+</div>
+
+<!-- Topbar keyboard (floats below topbar) -->
+<div class="math-keyboard" id="tb-keyboard" style="position:sticky;top:56px;z-index:150;border-radius:0 0 12px 12px;margin:0 auto;max-width:900px;"></div>
+
+<!-- HOME PAGE -->
+<div id="home-page">
+  <div class="hero">
+    <div class="hero-logo">
+      <div class="hero-sigma">Σ</div>
+      <h1 class="hero-title">Sigma<em>Alpha</em></h1>
+    </div>
+    <p class="hero-sub">Computational intelligence engine. Enter any question, calculation,<br>or query to get structured, factual answers.</p>
+
+    <div class="search-container">
+      <div class="search-wrap" id="main-search-wrap">
+        <input type="text" id="main-input" placeholder="e.g.  ∫x² sin(x) dx  ·  √(a²+b²)  ·  lim x→0 sin(x)/x" autocomplete="off" />
+        <button class="kb-toggle-btn" id="kb-toggle-btn" title="Toggle math keyboard">⌨</button>
+        <button class="search-btn" onclick="runMainSearch()"><span>Compute</span><span>▶</span></button>
+      </div>
+      <div class="math-keyboard" id="main-keyboard"></div>
+    </div>
+
+    <div class="examples">
+      <span class="ex-label">Try:</span>
+      <span class="chip" onclick="fillAndSearch(this)">derivative of x³ ln(x)</span>
+      <span class="chip" onclick="fillAndSearch(this)">speed of light in km/h</span>
+      <span class="chip" onclick="fillAndSearch(this)">prime factorization of 360</span>
+      <span class="chip" onclick="fillAndSearch(this)">solve x² − 5x + 6 = 0</span>
+      <span class="chip" onclick="fillAndSearch(this)">population of Japan</span>
+      <span class="chip" onclick="fillAndSearch(this)">1 light year in miles</span>
+    </div>
+
+    <div class="categories">
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="integral of e^x cos(x) dx"><div class="cat-icon">∫</div><div class="cat-name">Mathematics</div><div class="cat-desc">Calculus, algebra, number theory</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="boiling point of water at 5000m altitude"><div class="cat-icon">⚗️</div><div class="cat-name">Chemistry</div><div class="cat-desc">Elements, compounds, reactions</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="orbital period of Mars"><div class="cat-icon">🔭</div><div class="cat-name">Astronomy</div><div class="cat-desc">Stars, planets, cosmology</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="GDP per capita of Switzerland"><div class="cat-icon">📊</div><div class="cat-name">Data & Stats</div><div class="cat-desc">Demographics, economics, data</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="convert 75 mph to km/h"><div class="cat-icon">🔄</div><div class="cat-name">Unit Conversion</div><div class="cat-desc">Convert any unit to any unit</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="500 USD to EUR"><div class="cat-icon">💱</div><div class="cat-name">Finance</div><div class="cat-desc">Currency, markets, finance</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="nutritional info of 100g dark chocolate"><div class="cat-icon">🍎</div><div class="cat-name">Nutrition</div><div class="cat-desc">Food, diet, health data</div></a>
+      <a class="cat-card" onclick="fillAndSearch(this)" data-q="eigenvalues of [[2,1],[1,3]]"><div class="cat-icon">🧮</div><div class="cat-name">Linear Algebra</div><div class="cat-desc">Matrices, vectors, transforms</div></a>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="results-page" class="hidden">
+  <div class="results-wrap">
+    <div class="results-header">
+      <span class="results-query">Results for <strong id="results-query-text"></strong></span>
+      <span class="results-time" id="results-time"></span>
+    </div>
+    <div id="pod-container"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   KEYBOARD DATA
+═══════════════════════════════════════ */
+// § = cursor insertion point
+const TABS = [
+  { id:"basic", label:"Basic", rows:[
+    [
+      {l:"7",i:"7"},{l:"8",i:"8"},{l:"9",i:"9"},{l:"÷",i:"/"},{l:"(",i:"("},{l:")",i:")"},
+      {div:1},
+      {l:"x²",i:"^2",c:"fn"},{l:"x³",i:"^3",c:"fn"},{l:"xⁿ",i:"^(§)",c:"fn"},
+      {l:"√",i:"sqrt(§)",c:"fn"},{l:"ⁿ√",i:"nthroot(§,n)",c:"fn"},{l:"| |",i:"abs(§)",c:"fn"},
+    ],
+    [
+      {l:"4",i:"4"},{l:"5",i:"5"},{l:"6",i:"6"},{l:"×",i:"*"},{l:"[",i:"["},{l:"]",i:"]"},
+      {div:1},
+      {l:"a/b",i:"(§)/",c:"fn"},{l:"x!",i:"(§)!",c:"fn"},{l:"⌊x⌋",i:"floor(§)",c:"fn"},
+      {l:"⌈x⌉",i:"ceiling(§)",c:"fn"},{l:"mod",i:" mod ",c:"fn"},{l:"gcd",i:"gcd(§,)",c:"fn"},
+    ],
+    [
+      {l:"1",i:"1"},{l:"2",i:"2"},{l:"3",i:"3"},{l:"−",i:"-"},{l:"{",i:"{"},{l:"}",i:"}"},
+      {div:1},
+      {l:"±",i:"±"},{l:"=",i:"="},{l:"≠",i:"!="},{l:"≤",i:"<="},{l:"≥",i:">="},{l:"%",i:"%"},
+    ],
+    [
+      {l:"0",i:"0"},{l:".",i:"."},{l:",",i:","},{l:"+",i:"+"},{l:"e",i:"e"},{l:"π",i:"pi"},
+      {div:1},
+      {l:"∞",i:"infinity"},{l:"i",i:"i"},{l:"→",i:" -> "},{l:"≈",i:"~"},{l:"^",i:"^(§)"},{l:"_",i:"_(§)"},
+    ],
+  ]},
+
+  { id:"algebra", label:"Algebra", rows:[
+    [
+      {l:"solve",i:"solve §=0",c:"fn wide"},{l:"factor",i:"factor(§)",c:"fn wide"},
+      {l:"expand",i:"expand(§)",c:"fn wide"},{l:"simplify",i:"simplify(§)",c:"fn wide"},
+      {l:"roots",i:"roots(§)",c:"fn wide"},
+    ],
+    [
+      {l:"GCD",i:"GCD(§,)",c:"fn"},{l:"LCM",i:"LCM(§,)",c:"fn"},
+      {l:"nCr",i:"C(§,)",c:"fn"},{l:"nPr",i:"P(§,)",c:"fn"},
+      {l:"n!",i:"(§)!",c:"fn"},{l:"log base n",i:"log(§)/log(",c:"fn wide"},
+    ],
+    [
+      {l:"x",i:"x"},{l:"y",i:"y"},{l:"z",i:"z"},{l:"n",i:"n"},{l:"t",i:"t"},{l:"a",i:"a"},{l:"b",i:"b"},{l:"c",i:"c"},
+      {div:1},
+      {l:"∧",i:" and "},{l:"∨",i:" or "},{l:"¬",i:"not "},{l:"∀",i:"for all "},{l:"∃",i:"there exists "},
+    ],
+    [
+      {l:"matrix",i:"{{§,},{,}}",c:"fn wide"},{l:"det",i:"det{{§,},{,}}",c:"fn wide"},
+      {l:"transpose",i:"transpose{{§,},{,}}",c:"fn wide"},{l:"inverse",i:"inverse{{§,},{,}}",c:"fn wide"},
+    ],
+  ]},
+
+  { id:"calculus", label:"Calculus", rows:[
+    [
+      {l:"∫ dx",i:"integrate §",c:"fn wide"},{l:"∫ₐᵇ dx",i:"integrate § from a to b",c:"fn xl"},
+      {l:"∬ dA",i:"double integral of §",c:"fn wide"},{l:"∭ dV",i:"triple integral of §",c:"fn wide"},
+    ],
+    [
+      {l:"d/dx",i:"d/dx(§)",c:"fn"},{l:"d²/dx²",i:"d^2/dx^2(§)",c:"fn"},
+      {l:"d³/dx³",i:"d^3/dx^3(§)",c:"fn"},{l:"∂/∂x",i:"partial derivative of § with respect to x",c:"fn xxl"},
+      {l:"d/dt",i:"d/dt(§)",c:"fn"},
+    ],
+    [
+      {l:"lim x→a",i:"lim(§, x, a)",c:"fn wide"},{l:"lim x→∞",i:"lim(§, x, infinity)",c:"fn wide"},
+      {l:"lim x→0⁺",i:"lim(§, x, 0+)",c:"fn wide"},{l:"lim x→0⁻",i:"lim(§, x, 0-)",c:"fn wide"},
+    ],
+    [
+      {l:"Σ",i:"sum(§, n, 1, infinity)",c:"fn"},{l:"Σₙ₌₁ᴺ",i:"sum(§, n, 1, N)",c:"fn wide"},
+      {l:"Π",i:"product(§, n, 1, N)",c:"fn"},{l:"∇",i:"gradient of §",c:"fn"},
+      {l:"∇²",i:"laplacian of §",c:"fn"},{l:"div",i:"divergence of §",c:"fn"},{l:"curl",i:"curl of §",c:"fn"},
+    ],
+  ]},
+
+  { id:"functions", label:"Functions", rows:[
+    [
+      {l:"sin",i:"sin(§)",c:"fn"},{l:"cos",i:"cos(§)",c:"fn"},{l:"tan",i:"tan(§)",c:"fn"},
+      {l:"cot",i:"cot(§)",c:"fn"},{l:"sec",i:"sec(§)",c:"fn"},{l:"csc",i:"csc(§)",c:"fn"},
+    ],
+    [
+      {l:"sin⁻¹",i:"arcsin(§)",c:"fn"},{l:"cos⁻¹",i:"arccos(§)",c:"fn"},{l:"tan⁻¹",i:"arctan(§)",c:"fn"},
+      {l:"sinh",i:"sinh(§)",c:"fn"},{l:"cosh",i:"cosh(§)",c:"fn"},{l:"tanh",i:"tanh(§)",c:"fn"},
+    ],
+    [
+      {l:"ln",i:"ln(§)",c:"fn"},{l:"log",i:"log(§)",c:"fn"},{l:"log₂",i:"log2(§)",c:"fn"},
+      {l:"logₙ",i:"log base § of ",c:"fn"},{l:"eˣ",i:"e^(§)",c:"fn"},{l:"exp",i:"exp(§)",c:"fn"},
+    ],
+    [
+      {l:"√x",i:"sqrt(§)",c:"fn"},{l:"∛x",i:"cbrt(§)",c:"fn"},{l:"ceil",i:"ceiling(§)",c:"fn"},
+      {l:"floor",i:"floor(§)",c:"fn"},{l:"round",i:"round(§)",c:"fn"},{l:"sgn",i:"sign(§)",c:"fn"},
+      {l:"Γ(x)",i:"Gamma(§)",c:"fn"},{l:"ζ(x)",i:"Zeta(§)",c:"fn"},{l:"erf",i:"erf(§)",c:"fn"},
+    ],
+  ]},
+
+  { id:"greek", label:"Greek", rows:[
+    [{l:"α",i:"α"},{l:"β",i:"β"},{l:"γ",i:"γ"},{l:"δ",i:"δ"},{l:"ε",i:"ε"},{l:"ζ",i:"ζ"},{l:"η",i:"η"},{l:"θ",i:"θ"},{l:"ι",i:"ι"},{l:"κ",i:"κ"},{l:"λ",i:"λ"},{l:"μ",i:"μ"}],
+    [{l:"ν",i:"ν"},{l:"ξ",i:"ξ"},{l:"π",i:"pi"},{l:"ρ",i:"ρ"},{l:"σ",i:"σ"},{l:"τ",i:"τ"},{l:"υ",i:"υ"},{l:"φ",i:"φ"},{l:"χ",i:"χ"},{l:"ψ",i:"ψ"},{l:"ω",i:"ω"}],
+    [{l:"Γ",i:"Gamma"},{l:"Δ",i:"Delta"},{l:"Θ",i:"Theta"},{l:"Λ",i:"Lambda"},{l:"Ξ",i:"Xi"},{l:"Π",i:"Pi"},{l:"Σ",i:"Sigma"},{l:"Φ",i:"Phi"},{l:"Ψ",i:"Psi"},{l:"Ω",i:"Omega"}],
+  ]},
+
+  { id:"symbols", label:"Symbols", rows:[
+    [{l:"∈",i:"∈"},{l:"∉",i:"∉"},{l:"⊂",i:"⊂"},{l:"⊆",i:"⊆"},{l:"∪",i:"∪"},{l:"∩",i:"∩"},{l:"∅",i:"∅"},{l:"∀",i:"for all "},{l:"∃",i:"exists "},{l:"∄",i:"∄"}],
+    [{l:"ℕ",i:"natural numbers"},{l:"ℤ",i:"integers"},{l:"ℚ",i:"rationals"},{l:"ℝ",i:"reals"},{l:"ℂ",i:"complex numbers"},{l:"ℙ",i:"primes"}],
+    [{l:"°",i:"°"},{l:"℃",i:"°C"},{l:"℉",i:"°F"},{l:"Å",i:"Angstroms"},{div:1},{l:"≡",i:"≡"},{l:"∝",i:"∝"},{l:"⊥",i:"⊥"},{l:"∥",i:"∥"},{l:"∠",i:"∠"}],
+    [{l:"ℏ",i:"hbar"},{l:"ℵ₀",i:"aleph0"},{div:1},{l:"↑",i:"↑"},{l:"↓",i:"↓"},{l:"⇒",i:"=>"},{l:"⟺",i:"<=>"},{l:"⟹",i:"implies "},{l:"←",i:"←"},{l:"↔",i:"<->"}],
+  ]},
+];
+
+/* ═══════════════════════════════════════
+   BUILD KEYBOARD
+═══════════════════════════════════════ */
+function buildKeyboard(containerId, getInput, onCompute) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const tabBar = document.createElement("div");
+  tabBar.className = "kb-tabs";
+  const panels = [];
+
+  TABS.forEach((tab, ti) => {
+    // Tab button
+    const tabBtn = document.createElement("div");
+    tabBtn.className = "kb-tab" + (ti === 0 ? " active" : "");
+    tabBtn.textContent = tab.label;
+    tabBar.appendChild(tabBtn);
+
+    // Panel
+    const panel = document.createElement("div");
+    panel.className = "kb-panel" + (ti === 0 ? " active" : "");
+    panels.push({ tabBtn, panel });
+
+    tabBtn.addEventListener("mousedown", e => {
+      e.preventDefault();
+      panels.forEach(p => { p.tabBtn.classList.remove("active"); p.panel.classList.remove("active"); });
+      tabBtn.classList.add("active");
+      panel.classList.add("active");
+    });
+
+    // Rows
+    tab.rows.forEach(row => {
+      const rowEl = document.createElement("div");
+      rowEl.className = "kb-row";
+      row.forEach(k => {
+        if (k.div) { const d = document.createElement("div"); d.className = "kb-divider"; rowEl.appendChild(d); return; }
+        const btn = document.createElement("button");
+        btn.className = "kb-key" + (k.c ? " " + k.c : "");
+        btn.innerHTML = k.l;
+        btn.title = (k.i || "").replace(/§/g, "…");
+        btn.addEventListener("mousedown", e => {
+          e.preventDefault();
+          insertAtCursor(getInput(), k.i || k.l);
+          getInput().focus();
+        });
+        rowEl.appendChild(btn);
+      });
+      panel.appendChild(rowEl);
+    });
+
+    // Util row
+    const util = document.createElement("div");
+    util.className = "kb-util-row";
+
+    const delBtn = makeKey("⌫", "kb-key del", "Backspace", e => { e.preventDefault(); backspace(getInput()); getInput().focus(); });
+    const spaceBtn = makeKey("SPACE", "kb-key space-key", "Insert space", e => { e.preventDefault(); insertAtCursor(getInput(), " "); getInput().focus(); });
+    const enterBtn = makeKey("COMPUTE  ▶", "kb-key enter-key", "Compute", e => { e.preventDefault(); onCompute(); });
+
+    util.appendChild(delBtn);
+    util.appendChild(spaceBtn);
+    util.appendChild(enterBtn);
+    panel.appendChild(util);
+
+    container.appendChild(panel);
+  });
+
+  container.insertBefore(tabBar, container.firstChild);
+}
+
+function makeKey(html, cls, title, onMousedown) {
+  const btn = document.createElement("button");
+  btn.className = cls; btn.innerHTML = html; btn.title = title;
+  btn.addEventListener("mousedown", onMousedown);
+  return btn;
+}
+
+function insertAtCursor(input, template) {
+  if (!input) return;
+  const start = input.selectionStart, end = input.selectionEnd, val = input.value;
+  const marker = template.indexOf("§");
+  let insertStr, newCursor;
+  if (marker >= 0) {
+    const sel = val.slice(start, end);
+    insertStr = template.replace("§", sel);
+    newCursor = start + marker + sel.length;
+  } else {
+    insertStr = template;
+    newCursor = start + insertStr.length;
+  }
+  input.value = val.slice(0, start) + insertStr + val.slice(end);
+  input.setSelectionRange(newCursor, newCursor);
+  input.dispatchEvent(new Event("input"));
+}
+
+function backspace(input) {
+  if (!input) return;
+  const start = input.selectionStart, end = input.selectionEnd, val = input.value;
+  if (start !== end) { input.value = val.slice(0, start) + val.slice(end); input.setSelectionRange(start, start); }
+  else if (start > 0) { input.value = val.slice(0, start-1) + val.slice(start); input.setSelectionRange(start-1, start-1); }
+  input.dispatchEvent(new Event("input"));
+}
+
+// Build keyboards
+buildKeyboard("main-keyboard", () => document.getElementById("main-input"), runMainSearch);
+buildKeyboard("tb-keyboard",   () => document.getElementById("topbar-input"), runTopbarSearch);
+
+/* Toggle main keyboard */
+const kbToggleBtn = document.getElementById("kb-toggle-btn");
+const mainKeyboard = document.getElementById("main-keyboard");
+const mainSearchWrap = document.getElementById("main-search-wrap");
+
+kbToggleBtn.addEventListener("click", () => {
+  const open = mainKeyboard.classList.toggle("visible");
+  kbToggleBtn.classList.toggle("active", open);
+  mainSearchWrap.classList.toggle("kb-open", open);
+  if (open) document.getElementById("main-input").focus();
+});
+
+/* Toggle topbar keyboard */
+const tbKbBtn = document.getElementById("tb-kb-btn");
+const tbKeyboard = document.getElementById("tb-keyboard");
+
+tbKbBtn.addEventListener("click", () => {
+  const open = tbKeyboard.classList.toggle("visible");
+  tbKbBtn.classList.toggle("active", open);
+  if (open) document.getElementById("topbar-input").focus();
+});
+
+/* ═══════════════════════════════════════
+   CLAUDE API
+═══════════════════════════════════════ */
+const SYSTEM_PROMPT = `You are SigmaAlpha, a Wolfram Alpha-style computational intelligence engine. When given a query, analyze it and respond with a structured JSON object representing result "pods".
+
+IMPORTANT: Respond ONLY with valid JSON. No markdown, no backticks, no preamble.
+
+JSON schema:
+{"pods":[{"id":"string","title":"string","icon":"string (single emoji)","primary":boolean,"type":"value"|"table"|"list"|"math"|"text","content":...}]}
+
+Pod type content shapes:
+- "value": {"main":"string","sub":"string"}
+- "table": {"rows":[["label","value"],...]}
+- "list": {"items":[{"label":"string","value":"string"},...]}
+- "math": {"expressions":["step1","step2",...]}
+- "text": {"paragraphs":["para1","para2",...]}
+
+Rules:
+1. Always produce 3–7 pods. First pod "primary":true with the main answer.
+2. For math/calculus: pods = Result, Step-by-step working, Alternate forms, Properties
+3. For algebra: Solution, Working steps, Verification
+4. For unit conversion: Result, Comparisons, Formula
+5. For science/facts: Answer, Properties, Formulas, Context
+6. Be precise. Use Unicode math: ², ³, ⁴, √, ∫, ∂, π, ∞, ≈, ±, ×, ÷, →, ∑, ∏
+7. For math pods, show detailed step-by-step working — this is critical.
+8. Use only real, accurate data.`;
+
+async function callClaude(query) {
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514", max_tokens: 1000,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: query }]
+    })
+  });
+  const data = await r.json();
+  if (data.error) throw new Error(data.error.message);
+  const text = data.content.map(b => b.text || "").join("");
+  return JSON.parse(text.replace(/```json|```/g, "").trim());
+}
+
+/* ═══════════════════════════════════════
+   RENDERING
+═══════════════════════════════════════ */
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function renderPod(pod) {
+  const d = document.createElement("div");
+  d.className = "pod" + (pod.primary ? " primary" : "");
+  d.innerHTML = `<div class="pod-header"><div class="pod-icon">${pod.icon||"•"}</div><div class="pod-title">${esc(pod.title)}</div></div><div class="pod-body">${renderContent(pod)}</div>`;
+  return d;
+}
+
+function renderContent(pod) {
+  switch (pod.type) {
+    case "value": return `<div class="result-value">${esc(pod.content.main||"")}</div>${pod.content.sub?`<div class="result-subvalue">${esc(pod.content.sub)}</div>`:""}`;
+    case "table": return `<table class="pod-table">${(pod.content.rows||[]).map(r=>`<tr><td>${esc(r[0]||"")}</td><td>${esc(r[1]||"")}</td></tr>`).join("")}</table>`;
+    case "list": return `<ul class="pod-list">${(pod.content.items||[]).map(it=>`<li><span class="pod-list-label">${esc(it.label||"")}</span><span class="pod-list-value">${esc(it.value||"")}</span></li>`).join("")}</ul>`;
+    case "math": return (pod.content.expressions||[]).map(e=>`<div class="math-block">${esc(e)}</div>`).join("");
+    case "text": return `<div class="pod-text">${(pod.content.paragraphs||[]).map(p=>`<p>${esc(p)}</p>`).join("")}</div>`;
+    default: return `<div class="pod-text">${esc(JSON.stringify(pod.content))}</div>`;
+  }
+}
+
+function showSkeletons() {
+  document.getElementById("pod-container").innerHTML = [
+    [{c:"tall w-50"},{c:"w-30"}],
+    [{c:"w-100"},{c:"w-90"},{c:"w-70"}],
+    [{c:"w-100"},{c:"w-80"},{c:"w-90"},{c:"w-60"}],
+  ].map(lines=>`<div class="skeleton-pod"><div class="skeleton-header"><div class="skeleton-icon"></div><div class="skeleton-title-bar"></div></div><div class="skeleton-body">${lines.map(l=>`<div class="skeleton-line ${l.c}"></div>`).join("")}</div></div>`).join("");
+}
+
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+async function search(query) {
+  query = query.trim();
+  if (!query) return;
+  const t0 = Date.now();
+
+  // Close keyboards
+  mainKeyboard.classList.remove("visible");
+  kbToggleBtn.classList.remove("active");
+  mainSearchWrap.classList.remove("kb-open");
+  tbKeyboard.classList.remove("visible");
+  tbKbBtn.classList.remove("active");
+
+  document.getElementById("home-page").classList.add("hidden");
+  document.getElementById("results-page").classList.remove("hidden");
+  document.getElementById("topbar").classList.remove("hidden");
+  document.getElementById("topbar-input").value = query;
+  document.getElementById("main-input").value = query;
+  document.getElementById("results-query-text").textContent = query;
+  document.getElementById("results-time").textContent = "";
+  showSkeletons();
+
+  try {
+    const result = await callClaude(query);
+    const pods = result.pods || [];
+    const container = document.getElementById("pod-container");
+    container.innerHTML = "";
+    const grid = document.createElement("div"); grid.className = "pod-grid";
+    pods.forEach(pod => grid.appendChild(renderPod(pod)));
+    container.appendChild(grid);
+    document.getElementById("results-time").textContent = `${((Date.now()-t0)/1000).toFixed(2)}s · ${pods.length} pods`;
+  } catch(err) {
+    document.getElementById("pod-container").innerHTML = `<div class="error-pod"><div class="error-icon">⚠️</div><div><div class="error-title">Computation failed</div><div class="error-msg">${esc(err.message||"Unknown error.")}</div></div></div>`;
+  }
+  window.scrollTo({ top: 0 });
+}
+
+function runMainSearch() { search(document.getElementById("main-input").value); }
+function runTopbarSearch() { search(document.getElementById("topbar-input").value); }
+function fillAndSearch(el) { const q = el.dataset.q||el.textContent.trim(); document.getElementById("main-input").value=q; search(q); }
+function goHome() {
+  document.getElementById("home-page").classList.remove("hidden");
+  document.getElementById("results-page").classList.add("hidden");
+  document.getElementById("topbar").classList.add("hidden");
+  tbKeyboard.classList.remove("visible"); tbKbBtn.classList.remove("active");
+  window.scrollTo({ top: 0 });
+}
+
+document.getElementById("main-input").addEventListener("keydown", e => { if(e.key==="Enter") runMainSearch(); });
+document.getElementById("topbar-input").addEventListener("keydown", e => { if(e.key==="Enter") runTopbarSearch(); });
+</script>
+</body>
+</html>
