@@ -1,29 +1,25 @@
 # Mathematical Web App
 
-This project is now a browser-based **Computational Knowledge Engine** implemented in pure **HTML, CSS, and JavaScript**.
+This project includes a browser UI plus a deterministic local math engine.
 
-## What it does
-- Accepts natural-language math prompts.
-- Classifies requests as calculation, visualization, fact lookup, or ambiguous.
-- Returns structured output with:
-  - interpretation,
-  - step-by-step logic,
-  - exact and numeric forms,
-  - metadata,
-  - visualization for plot requests.
+## Files
+- `wolfram-alpha-replica (1).html`: front-end interface (left unchanged).
+- `math-engine.js`: local solver that handles arithmetic, polynomial derivative/integral, linear/quadratic solving, GCD/LCM, and prime factorization.
+- `math-engine.test.js`: Node-based smoke tests for the solver.
 
-## Supported examples
-- `Integrate x^2`
-- `Differentiate 3x^3+2x`
-- `Solve x^2 - 4 = 0`
-- `Plot sin(x)`
-- `What is the speed of light?`
+## What the engine can solve
+- Arithmetic expressions: `2+2*5`, `(3^2+1)/2`
+- Derivatives of polynomials: `derivative of 3x^3+2x`
+- Integrals of polynomials: `integrate 6x^2+2`
+- Equation solving: `solve x^2 - 5x + 6 = 0`
+- Number theory: `prime factorization of 360`, `gcd(84,126)`, `lcm(12,18)`
 
-## Run locally
-Because this is static frontend code, you can open `index.html` directly, or serve it with any static server.
-
-Example:
+## Run tests
 ```bash
-python -m http.server 8000
+node math-engine.test.js
 ```
-Then open `http://localhost:8000`.
+
+## Run quick manual checks
+```bash
+node -e "const {solveQuery}=require('./math-engine'); console.log(JSON.stringify(solveQuery('solve x^2-5x+6=0'),null,2));"
+```
